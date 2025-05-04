@@ -1,6 +1,5 @@
 package com.vn.DATN.DTO.mapper;
 
-import com.vn.DATN.DTO.request.AnswerDTO;
 import com.vn.DATN.DTO.request.QuestionDTO;
 import com.vn.DATN.DTO.request.SurveyDTO;
 import com.vn.DATN.entity.Question;
@@ -10,7 +9,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,17 +20,14 @@ public interface SurveyQuestionMapper {
 
     default SurveyDTO toSurveyDTO(List<SurveyQuestion> surveyQuestions, List<QuestionDTO> questionDTOS) {
         if (surveyQuestions == null || surveyQuestions.isEmpty()) return null;
-
-        // Lấy Survey (chỉ có 1 vì đã group theo 1 surveyId)
         Survey survey = surveyQuestions.get(0).getSurvey();
         SurveyDTO dto = new SurveyDTO();
         dto.setSurveyId(survey.getSurveyId());
         dto.setTitle(survey.getTitle());
         dto.setDescription(survey.getDescription());
         dto.setScore(survey.getScore());
-        dto.setCourse(survey.getCourse());
+        dto.setCourseName(survey.getCourse().getCourseName());
 
-        // Group theo questionId
         Map<Integer, List<SurveyQuestion>> grouped = surveyQuestions.stream()
                 .collect(Collectors.groupingBy(q -> q.getQuestion().getQuestionId()));
 

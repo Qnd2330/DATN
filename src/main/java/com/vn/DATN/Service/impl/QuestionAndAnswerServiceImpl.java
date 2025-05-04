@@ -1,6 +1,5 @@
 package com.vn.DATN.Service.impl;
 
-import com.vn.DATN.DTO.mapper.QuestionMapper;
 import com.vn.DATN.DTO.request.QuestionDTO;
 import com.vn.DATN.DTO.mapper.QuestionAnswerMapper;
 import com.vn.DATN.DTO.request.AnswerDTO;
@@ -61,8 +60,7 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
     @Override
     @Transactional
     public Question getQuestion(QuestionDTO questionDTO) {
-//        Hàm này thấy có 1 vđ nữa,
-        Question question = new Question();
+        Question question ;
         if (questionDTO.getQuestionId() == null) {
             question = questionService.create(questionDTO);
         } else {
@@ -84,27 +82,14 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
     @Override
     @Transactional
     public boolean deleteByQuestionId(Integer questionId) {
-        boolean isDelete;
         if (!questionService.existsById(questionId)) {
-            throw new RuntimeException("Câu hỏi không tồn tại với ID: " + questionId);
+            System.out.println("Câu hỏi không tồn tại");
+            return false;
         }
-        List<Answer> listAnswers = findAnswersByQuestionId(questionId);
-
-        int deleted = questionAndAnswerRepo.deleteByQuestionId(questionId);
-        if(deleted < 0) {
-            throw new RuntimeException("Xóa quan hệ Question-Answer thất bại");
-        }
-
-        for (Answer answers : listAnswers) {
-            isDelete =  answerService.deleteById(answers.getAnswerId());
-           if (!isDelete) {
-               throw new RuntimeException("Xóa câu trả lời thất bại với ID: " + answers.getAnswerId());
-           }
-        }
-
-        isDelete = questionService.delete(questionId);
-        if (!isDelete) {
-            throw new RuntimeException("Xóa câu hỏi thất bại");
+        int deletedRelations = questionAndAnswerRepo.deleteByQuestionId(questionId);
+        if (deletedRelations < 0) {
+            System.out.println("Xóa quan hệ Question-Answer thất bại");
+            return false;
         }
         return true;
     }

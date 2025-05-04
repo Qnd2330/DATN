@@ -1,8 +1,10 @@
 package com.vn.DATN.Service.impl;
 
 import com.vn.DATN.DTO.request.SurveyDTO;
+import com.vn.DATN.Service.CourseService;
 import com.vn.DATN.Service.SurveyService;
 import com.vn.DATN.Service.repositories.SurveyRepo;
+import com.vn.DATN.entity.Course;
 import com.vn.DATN.entity.Survey;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,32 +15,39 @@ import org.springframework.stereotype.Service;
 public class SurveyServiceImpl implements SurveyService {
     private final SurveyRepo surveyRepo;
 
+    private final CourseService courseService;
+
     @Override
     @Transactional
     public Survey create(SurveyDTO request) {
-        Survey survey = surveyRepo.findSurveyByTitle(request.getTitle());
-        if (survey != null) {
-            return survey;
+        Survey survey = new Survey();
+        Course course = courseService.findByCourseName(request.getCourseName());
+        if(course == null) {
+            throw new RuntimeException("Không tìm thấy môn học");
         }
         survey = Survey.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .score(request.getScore())
-                .course(request.getCourse())
+                .course(course)
                 .build();
         return surveyRepo.save(survey);
     }
 
     @Override
     public Survey edit(SurveyDTO request) {
-        Survey survey = surveyRepo.findSurveyByTitle(request.getTitle());
+        Survey survey = findById(request.getSurveyId());
         if (survey == null) {
             throw new RuntimeException("Không tìm thấy phiếu đánh giá " + request.getTitle());
+        }
+        Course course = courseService.findByCourseName(request.getCourseName());
+        if(course == null) {
+            throw new RuntimeException("Không tìm thấy môn học");
         }
         survey.setTitle(request.getTitle());
         survey.setDescription(request.getDescription());
         survey.setScore(request.getScore());
-        survey.setCourse(request.getCourse());
+        survey.setCourse(course);
         return surveyRepo.saveAndFlush(survey);
     }
 

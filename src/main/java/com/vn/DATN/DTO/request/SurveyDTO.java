@@ -15,6 +15,6 @@ public class SurveyDTO {
     private String title;
     private String description;
     private Integer score;
-    private Course course;
+    private String courseName;
     private List<QuestionDTO> questionDTO;
 }
