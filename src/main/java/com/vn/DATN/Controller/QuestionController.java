@@ -3,8 +3,6 @@ package com.vn.DATN.Controller;
 import com.vn.DATN.Common.BasicBeanRemote;
 import com.vn.DATN.DTO.mapper.QuestionMapper;
 import com.vn.DATN.DTO.request.QuestionDTO;
-import com.vn.DATN.DTO.request.AnswerDTO;
-import com.vn.DATN.Service.AnswerService;
 import com.vn.DATN.Service.QuestionAndAnswerService;
 import com.vn.DATN.Service.QuestionService;
 import com.vn.DATN.entity.Answer;

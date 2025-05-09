@@ -83,13 +83,11 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
     @Transactional
     public boolean deleteByQuestionId(Integer questionId) {
         if (!questionService.existsById(questionId)) {
-            System.out.println("Câu hỏi không tồn tại");
-            return false;
+            throw new RuntimeException("Câu hỏi không tồn tại");
         }
         int deletedRelations = questionAndAnswerRepo.deleteByQuestionId(questionId);
         if (deletedRelations < 0) {
-            System.out.println("Xóa quan hệ Question-Answer thất bại");
-            return false;
+            throw new RuntimeException("Xóa quan hệ Question-Answer thất bại");
         }
         return true;
     }

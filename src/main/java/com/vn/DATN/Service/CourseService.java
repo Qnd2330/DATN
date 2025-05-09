@@ -13,5 +13,5 @@ public interface CourseService {
 
     Course findById(Integer CourseId);
 
-    boolean deleteById(Integer CourseId);
+    boolean delete(Integer CourseId);
 }

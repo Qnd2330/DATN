@@ -1,39 +1,37 @@
 package com.vn.DATN.Controller;
 
-import com.vn.DATN.DTO.mapper.SurveyMapper;
-import com.vn.DATN.DTO.request.SurveyDTO;
-import com.vn.DATN.Service.SurveyAndQuestionService;
-import com.vn.DATN.Service.SurveyService;
-import com.vn.DATN.entity.Survey;
+import com.vn.DATN.DTO.mapper.CourseMapper;
+import com.vn.DATN.DTO.request.CourseDTO;
+import com.vn.DATN.Service.CourseService;
+import com.vn.DATN.entity.Course;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
-@RequestMapping("/survey")
+@RequestMapping("/course")
 @RequiredArgsConstructor
-public class SurveyController {
-    private final SurveyService surveyService;
-    private final SurveyAndQuestionService surveyAndQuestionService;
+public class CourseController {
+    private final CourseService courseService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create (@RequestBody SurveyDTO surveyDTO){
+    public ResponseEntity<?> create(@RequestBody CourseDTO courseDTO) {
         try {
-            SurveyDTO created = surveyAndQuestionService.create(surveyDTO);
-            return ResponseEntity.ok(created);
+            Course created = courseService.create(courseDTO);
+            CourseDTO result = CourseMapper.INSTANCE.toDTO(created);
+            return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody SurveyDTO surveyDTO) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody CourseDTO courseDTO) {
         try {
-            surveyDTO.setSurveyId(id);
-            Survey updated = surveyService.edit(surveyDTO);
-            SurveyDTO result = SurveyMapper.INSTANCE.toDTO(updated);
+            courseDTO.setCourseId(id);
+            Course updated = courseService.edit(courseDTO);
+            CourseDTO result = CourseMapper.INSTANCE.toDTO(updated);
             return ResponseEntity.ok(result);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -43,7 +41,7 @@ public class SurveyController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         try {
-            boolean deleted = surveyAndQuestionService.delete(id);
+            boolean deleted = courseService.delete(id);
             if (deleted) {
                 return ResponseEntity.ok("Xóa thành công");
             } else {

@@ -19,12 +19,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course create(CourseDTO courseDTO) {
-        Course course;
         Users users = usersService.findByUserName(courseDTO.getUsersName());
         if(users == null){
             throw new RuntimeException("Không tìm thấy người dùng");
         }
-        course = Course.builder()
+        Course course = Course.builder()
                 .courseName(courseDTO.getCourseName())
                 .duration(courseDTO.getDuration())
                 .users(users)
@@ -63,7 +62,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public boolean deleteById(Integer courseId) {
+    public boolean delete(Integer courseId) {
         if (!courseRepo.existsById(courseId)) {
             return false;
         }

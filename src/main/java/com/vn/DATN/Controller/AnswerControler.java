@@ -1,12 +1,9 @@
 package com.vn.DATN.Controller;
 
 import com.vn.DATN.Common.BasicBeanRemote;
-import com.vn.DATN.DTO.request.QuestionDTO;
 import com.vn.DATN.DTO.request.AnswerDTO;
 import com.vn.DATN.entity.Answer;
-import com.vn.DATN.entity.Question;
 import com.vn.DATN.Service.AnswerService;
-import com.vn.DATN.Service.QuestionAndAnswerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
