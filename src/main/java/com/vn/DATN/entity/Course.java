@@ -28,4 +28,21 @@ public class Course {
     @OneToOne
     @JoinColumn(name = "teach_id", referencedColumnName = "userId")
     private Users users;
+
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
