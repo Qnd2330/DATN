@@ -25,7 +25,8 @@ public class CourseServiceImpl implements CourseService {
         }
         Course course = Course.builder()
                 .courseName(courseDTO.getCourseName())
-                .duration(courseDTO.getDuration())
+                .startDate(courseDTO.getStartDate())
+                .endDate(courseDTO.getEndDate())
                 .users(users)
                 .build();
         return courseRepo.save(course);
@@ -42,7 +43,8 @@ public class CourseServiceImpl implements CourseService {
             throw new RuntimeException("Không tìm thấy người dùng");
         }
         course.setCourseName(courseDTO.getCourseName());
-        course.setDuration(courseDTO.getDuration());
+        course.setStartDate(courseDTO.getStartDate());
+        course.setEndDate(courseDTO.getEndDate());
         course.setUsers(users);
         return courseRepo.saveAndFlush(course);
     }

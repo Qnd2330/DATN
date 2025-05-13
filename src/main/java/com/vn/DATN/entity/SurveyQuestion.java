@@ -20,6 +20,6 @@ public class SurveyQuestion {
     @JoinColumn(name = "surveyId", referencedColumnName = "surveyId")
     private Survey survey;
     @ManyToOne
-    @JoinColumn(name = "questionId", referencedColumnName = "questionId")
-    private Question question;
+    @JoinColumn(name = "question_answer_id", referencedColumnName = "id")
+    private QuestionAnswer questionAnswer;
 }

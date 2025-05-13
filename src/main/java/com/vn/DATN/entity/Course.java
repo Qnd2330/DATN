@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "course")
 @Data
@@ -18,9 +21,11 @@ public class Course {
     private Integer courseId;
     @Column(name = "courseName")
     private String courseName;
-    @Column(name = "duration")
-    private String duration;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
     @OneToOne
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    @JoinColumn(name = "teach_id", referencedColumnName = "userId")
     private Users users;
 }

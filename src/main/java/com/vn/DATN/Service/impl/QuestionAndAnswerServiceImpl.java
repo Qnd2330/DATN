@@ -1,7 +1,6 @@
 package com.vn.DATN.Service.impl;
 
 import com.vn.DATN.DTO.request.QuestionDTO;
-import com.vn.DATN.DTO.mapper.QuestionAnswerMapper;
 import com.vn.DATN.DTO.request.AnswerDTO;
 import com.vn.DATN.Service.AnswerService;
 import com.vn.DATN.Service.QuestionAndAnswerService;
@@ -27,21 +26,27 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
 
     @Override
     @Transactional
-    public List<QuestionDTO> create(List<QuestionDTO> request) {
+    public List<QuestionAnswer> create(List<QuestionDTO> request) {
         List<QuestionAnswer> questionAnswers = new ArrayList<>();
         for (QuestionDTO questionDTO : request) {
             Question question = getQuestion(questionDTO);
             for (AnswerDTO answerDTO : questionDTO.getAnswers()) {
-                questionAnswers.add(QuestionAnswer.builder()
-                        .question(question)
-                        .answer(getAnswer(answerDTO))
-                        .build());
+                Answer answer = getAnswer(answerDTO);
+                boolean exists = questionAndAnswerRepo.findByQuestionAndAnswer(question, answer).isPresent();
+                if (!exists) {
+                    questionAnswers.add(
+                            QuestionAnswer.builder()
+                                    .question(question)
+                                    .answer(answer)
+                                    .build()
+                    );
+                }
             }
         }
-
         List<QuestionAnswer> questionAnswersList = questionAndAnswerRepo.saveAll(questionAnswers);
-        return QuestionAnswerMapper.INSTANCE.toQuestionDTOList(questionAnswersList);
+        return questionAnswersList;
     }
+
     @Override
     @Transactional
     public Answer getAnswer(AnswerDTO answerDTO) {
@@ -72,6 +77,7 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
         }
         return question;
     }
+
 
     @Override
     public List<Answer> findAnswersByQuestionId(Integer questionId) {

@@ -20,7 +20,7 @@ public class SurveyServiceImpl implements SurveyService {
     @Override
     @Transactional
     public Survey create(SurveyDTO request) {
-        Survey survey = new Survey();
+        Survey survey;
         Course course = courseService.findByCourseName(request.getCourseName());
         if(course == null) {
             throw new RuntimeException("Không tìm thấy môn học");

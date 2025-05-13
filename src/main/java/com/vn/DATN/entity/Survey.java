@@ -6,13 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "survey")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Survey extends BaseModels {
+public class Survey{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer surveyId;
@@ -25,4 +27,5 @@ public class Survey extends BaseModels {
     @OneToOne
     @JoinColumn(name = "courseId")
     private Course course;
+
 }

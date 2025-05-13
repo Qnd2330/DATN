@@ -9,11 +9,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveyDTO {
+public class SubmissionDTO {
+    private Integer userId;
     private Integer surveyId;
-    private String title;
-    private String description;
-    private Integer score;
-    private String courseName;
-    private List<QuestionDTO> questionDTO;
+    private List<UserAnswerDTO> userAnswers;
 }

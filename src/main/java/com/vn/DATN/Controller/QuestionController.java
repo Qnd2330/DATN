@@ -7,6 +7,7 @@ import com.vn.DATN.Service.QuestionAndAnswerService;
 import com.vn.DATN.Service.QuestionService;
 import com.vn.DATN.entity.Answer;
 import com.vn.DATN.entity.Question;
+import com.vn.DATN.entity.QuestionAnswer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class QuestionController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody List<QuestionDTO> questionDTOList) {
         try {
-            List<QuestionDTO> created = questionAndAnswerService.create(questionDTOList);
+            List<QuestionAnswer> created = questionAndAnswerService.create(questionDTOList);
             return ResponseEntity.ok(created);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());

@@ -16,32 +16,8 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer answerId;
-    @Column(name = "answerText")// đặt tên nh lz. để là content thôi là được, bên question tương tụw
-    private String answerText;
+    @Column(name = "content")
+    private String content;
     @Column(name = "point")
     private Integer point;
-
-    public Integer getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(Integer answerId) {
-        this.answerId = answerId;
-    }
-
-    public String getAnswerText() {
-        return answerText;
-    }
-
-    public void setAnswerText(String answerText) {
-        this.answerText = answerText;
-    }
-
-    public Integer getPoint() {
-        return point;
-    }
-
-    public void setPoint(Integer point) {
-        this.point = point;
-    }
 }

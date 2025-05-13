@@ -4,5 +4,5 @@ import com.vn.DATN.entity.Answer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnswerRepo extends JpaRepository<Answer, Integer> {
-    Answer findByAnswerText(String content);
+    Answer findByContent(String content);
 }

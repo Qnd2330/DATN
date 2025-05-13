@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Class extends BaseModels {
+public class Class {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer classID;
+    private Integer classId;
     @Column(name = "className")
     private String className;
     @Column(name = "totalStudent")

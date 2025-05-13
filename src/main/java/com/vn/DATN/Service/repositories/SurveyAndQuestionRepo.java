@@ -12,10 +12,4 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface SurveyAndQuestionRepo extends JpaRepository<SurveyQuestion, Integer> {
-    @Query("SELECT sq.question FROM SurveyQuestion sq WHERE sq.survey.id = :surveyId")
-    List<Question> findQuestionsBySurveyId(@Param("surveyId") Integer surveyId);
-    @Modifying
-    @Transactional
-    @Query("DELETE  FROM SurveyQuestion sq WHERE sq.survey.id = :surveyId")
-    int deleteBySurveyId(@Param("surveyId") Integer surveyId);
 }

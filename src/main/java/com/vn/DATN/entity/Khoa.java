@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Khoa extends BaseModels {
+public class Khoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer khoaId;

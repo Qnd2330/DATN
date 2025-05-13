@@ -16,12 +16,12 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     @Transactional
     public Answer create(AnswerDTO request) {
-        Answer answer = answerRepo.findByAnswerText(request.getAnswerText());
+        Answer answer = answerRepo.findByContent(request.getContent());
         if (answer != null) {
             return answer;
         }
         answer = Answer.builder()
-                .answerText(request.getAnswerText())
+                .content(request.getContent())
                 .point(request.getPoint())
                 .build();
         return answerRepo.save(answer);
@@ -34,7 +34,7 @@ public class AnswerServiceImpl implements AnswerService {
         if (answer == null) {
             return answer;
         }
-        answer.setAnswerText(request.getAnswerText());
+        answer.setContent(request.getContent());
         answer.setPoint(request.getPoint());
         return answerRepo.saveAndFlush(answer);
     }
