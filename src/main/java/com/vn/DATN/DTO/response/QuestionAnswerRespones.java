@@ -1,7 +1,5 @@
-package com.vn.DATN.DTO.respones;
+package com.vn.DATN.DTO.response;
 
-import com.vn.DATN.entity.Answer;
-import com.vn.DATN.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

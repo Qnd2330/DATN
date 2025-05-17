@@ -8,6 +8,7 @@ import com.vn.DATN.entity.Survey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -19,6 +20,7 @@ public class SurveyController {
     private final SurveyAndQuestionService surveyAndQuestionService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('CREATE_SURVEY_ACCESS') or hasAuthority('CREATE_ACCESS')")
     public ResponseEntity<?> create (@RequestBody SurveyDTO surveyDTO){
         try {
             SurveyDTO created = surveyAndQuestionService.create(surveyDTO);
@@ -29,6 +31,7 @@ public class SurveyController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('UPDATE_SURVEY_ACCESS') or hasAuthority('UPDATE_ACCESS')")
     public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody SurveyDTO surveyDTO) {
         try {
             surveyDTO.setSurveyId(id);
@@ -41,6 +44,7 @@ public class SurveyController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('DELETE_SURVEY_ACCESS') or hasAuthority('DELETE_ACCESS')")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         try {
             boolean deleted = surveyAndQuestionService.delete(id);

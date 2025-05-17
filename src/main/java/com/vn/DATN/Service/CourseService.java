@@ -2,8 +2,13 @@ package com.vn.DATN.Service;
 
 import com.vn.DATN.DTO.request.CourseDTO;
 import com.vn.DATN.entity.Course;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 public interface CourseService {
+
+    Page<Course> listCourse(Pageable pageable);
 
     Course create(CourseDTO CourseDTO);
 

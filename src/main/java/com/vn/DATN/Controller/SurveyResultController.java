@@ -6,6 +6,7 @@ import com.vn.DATN.entity.SurveyResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/result")
 @RequiredArgsConstructor
 public class SurveyResultController {
-
     private final SurveyResultService surveyResultService;
 
     @PostMapping("/submit")
+    @PreAuthorize("hasAuthority('SUBMIT_SURVEY_ACCESS') or hasAuthority('CREATE_ACCESS')")
     public ResponseEntity<?> submit (@RequestBody SubmissionDTO submissionDTO){
         try {
             SurveyResult created = surveyResultService.submitSurvey(submissionDTO);

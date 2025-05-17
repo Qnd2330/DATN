@@ -11,6 +11,7 @@ import com.vn.DATN.entity.QuestionAnswer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('CREATE_QUESTION_ACCESS') or hasAuthority('CREATE_ACCESS')")
     public ResponseEntity<?> create(@RequestBody List<QuestionDTO> questionDTOList) {
         try {
             List<QuestionAnswer> created = questionAndAnswerService.create(questionDTOList);
@@ -40,6 +42,7 @@ public class QuestionController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAuthority('UPDATE_QUESTION_ACCESS') or hasAuthority('UPDATE_ACCESS')")
     public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody QuestionDTO questionDTO) {
         try {
             questionDTO.setQuestionId(id);
@@ -52,6 +55,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('DELETE_QUESTION_ACCESS') or hasAuthority('DELETE_ACCESS')")
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         try {
             boolean deleted = questionAndAnswerService.deleteByQuestionId(id);

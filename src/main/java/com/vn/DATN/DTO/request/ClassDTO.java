@@ -11,5 +11,5 @@ public class ClassDTO {
     private Integer classID;
     private String className;
     private Integer totalStudent;
-    private String khoaName;
+    private String facultyName;
 }

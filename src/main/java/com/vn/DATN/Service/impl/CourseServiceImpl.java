@@ -7,6 +7,8 @@ import com.vn.DATN.Service.repositories.CourseRepo;
 import com.vn.DATN.entity.Course;
 import com.vn.DATN.entity.Users;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,11 +20,13 @@ public class CourseServiceImpl implements CourseService {
     private final UsersService usersService;
 
     @Override
+    public Page<Course> listCourse(Pageable pageable) {
+        return courseRepo.findAll(pageable);
+    }
+
+    @Override
     public Course create(CourseDTO courseDTO) {
-        Users users = usersService.findByUserName(courseDTO.getUsersName());
-        if(users == null){
-            throw new RuntimeException("Không tìm thấy người dùng");
-        }
+        Users users = usersService.findByUserName(courseDTO.getTeacherName());
         Course course = Course.builder()
                 .courseName(courseDTO.getCourseName())
                 .startDate(courseDTO.getStartDate())
@@ -38,7 +42,7 @@ public class CourseServiceImpl implements CourseService {
         if(course == null){
             throw new RuntimeException("Không tìm thấy khóa học");
         }
-        Users users = usersService.findByUserName(courseDTO.getUsersName());
+        Users users = usersService.findByUserName(courseDTO.getTeacherName());
         if(users == null){
             throw new RuntimeException("Không tìm thấy người dùng");
         }

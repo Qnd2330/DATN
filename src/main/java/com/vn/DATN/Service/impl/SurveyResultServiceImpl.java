@@ -3,7 +3,7 @@ package com.vn.DATN.Service.impl;
 import com.vn.DATN.Common.BasicBeanRemote;
 import com.vn.DATN.DTO.request.SubmissionDTO;
 import com.vn.DATN.DTO.request.UserAnswerDTO;
-import com.vn.DATN.Service.SurveyResultService;;
+import com.vn.DATN.Service.SurveyResultService;
 import com.vn.DATN.Service.repositories.*;
 import com.vn.DATN.entity.*;
 import lombok.RequiredArgsConstructor;

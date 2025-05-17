@@ -14,5 +14,5 @@ public class CourseDTO {
     private String courseName;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String usersName;
+    private String teacherName;
 }

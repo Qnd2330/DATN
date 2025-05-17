@@ -1,4 +1,4 @@
-package com.vn.DATN.DTO.respones;
+package com.vn.DATN.DTO.response;
 
 import com.vn.DATN.entity.Question;
 import lombok.AllArgsConstructor;

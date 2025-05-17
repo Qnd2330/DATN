@@ -1,11 +1,14 @@
 package com.vn.DATN.Service;
 
+import com.vn.DATN.DTO.request.ClassAndCourseDTO;
 import com.vn.DATN.entity.ClassCourse;
 
-public interface ClassAndCourseService {
-    ClassCourse linkClassWithCourse (Integer classId, Integer courseId);
+import java.util.List;
 
-    ClassCourse editLinkClassWithCourse (Integer classID, Integer courseId, Integer newCourseId);
+public interface ClassAndCourseService {
+    List<ClassCourse> linkClassWithCourse (ClassAndCourseDTO dto);
+
+    List<ClassCourse> editLinkClassWithCourse (ClassAndCourseDTO dto);
 
     ClassCourse deleteLinkClassWithCourse (Integer classId);
 }

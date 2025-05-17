@@ -8,7 +8,10 @@ import com.vn.DATN.entity.Course;
 import com.vn.DATN.entity.Survey;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +19,11 @@ public class SurveyServiceImpl implements SurveyService {
     private final SurveyRepo surveyRepo;
 
     private final CourseService courseService;
+
+    @Override
+    public Page<Survey> getAll(Pageable pageable) {
+        return surveyRepo.findAll(pageable);
+    }
 
     @Override
     @Transactional
