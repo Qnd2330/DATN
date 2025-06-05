@@ -52,7 +52,8 @@ public class JwtTokenProvider {
 
     // Trích xuất thông tin từ token
     public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
+        Claims claims = getClaims(token);
+        return claims != null ? claims.getSubject() : null;
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
@@ -61,10 +62,14 @@ public class JwtTokenProvider {
     }
 
     private boolean isExpired(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+        Claims claims = getClaims(token);
+        return claims == null || claims.getExpiration().before(new Date());
     }
 
     private Claims getClaims(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new IllegalArgumentException("JWT token is null or empty");
+        }
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
     }
 }

@@ -23,12 +23,6 @@ public class Survey{
     private String title;
     @Column(name = "description")
     private String description;
-    @Column(name = "score")
-    private Integer score;
-    @OneToOne
-    @JoinColumn(name = "courseId")
-    private Course course;
-
     @Column(name = "create_at")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime createAt;

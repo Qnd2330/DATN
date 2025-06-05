@@ -45,6 +45,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(Integer answerId) {
         if (!answerRepo.existsById(answerId)) {
             return false;

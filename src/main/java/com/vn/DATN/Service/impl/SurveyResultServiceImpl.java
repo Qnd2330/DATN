@@ -2,12 +2,16 @@ package com.vn.DATN.Service.impl;
 
 import com.vn.DATN.Common.BasicBeanRemote;
 import com.vn.DATN.DTO.request.SubmissionDTO;
+import com.vn.DATN.DTO.response.SurveyCourseTeacherResponse;
 import com.vn.DATN.DTO.request.UserAnswerDTO;
 import com.vn.DATN.Service.SurveyResultService;
 import com.vn.DATN.Service.repositories.*;
 import com.vn.DATN.entity.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,9 +31,11 @@ public class SurveyResultServiceImpl implements SurveyResultService {
         if (survey == null) {
             throw new RuntimeException("Bản báo cáo không tồn tại");
         }
+
         SurveyResult surveyResult = SurveyResult.builder()
                 .users(user)
                 .survey(survey)
+                .score(calculateScore(submissionDTO))
                 .build();
         surveyResultRepo.save(surveyResult);
 
@@ -58,6 +64,12 @@ public class SurveyResultServiceImpl implements SurveyResultService {
     }
 
     @Override
+    public Page<SurveyCourseTeacherResponse> getSurveyWithPagination(Integer userId, Pageable pageable) {
+        Page<SurveyCourseTeacherResponse> fullList = surveyResultRepo.getSurveySummaries(userId, pageable);
+        return fullList;
+    }
+
+    @Override
     public SurveyResult get(Integer id) {
         return surveyResultRepo.findById(id).orElse(null);
     }
@@ -65,5 +77,19 @@ public class SurveyResultServiceImpl implements SurveyResultService {
     @Override
     public SurveyResult deleteSurvey(Integer id) {
         return null;
+    }
+
+    private int calculateScore(SubmissionDTO submissionDTO) {
+        int totalScore = 0;
+
+        for (UserAnswerDTO userAnswerDTO : submissionDTO.getUserAnswers()) {
+            Answer answer = basicBeanRemote.find(Answer.class, userAnswerDTO.getAnswerId());
+            if (answer == null) {
+                throw new RuntimeException("Câu trả lời không tồn tại");
+            }
+            totalScore += answer.getPoint();
+        }
+
+        return totalScore;
     }
 }

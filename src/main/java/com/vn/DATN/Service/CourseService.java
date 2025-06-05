@@ -5,10 +5,14 @@ import com.vn.DATN.entity.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 
 public interface CourseService {
 
     Page<Course> listCourse(Pageable pageable);
+
+    List<Course> getAll();
 
     Course create(CourseDTO CourseDTO);
 

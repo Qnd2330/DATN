@@ -33,8 +33,13 @@ public class SurveyAndQuestionServiceImpl implements SurveyAndQuestionService {
                         .questionAnswer(question)
                         .build());
             }
+            surveyAndQuestionRepo.saveAll(surveyQuestions);
+        return surveyDTO;
+    }
 
-        List<SurveyQuestion> surveyQuestionList = surveyAndQuestionRepo.saveAll(surveyQuestions);
+    public SurveyDTO update (SurveyDTO surveyDTO) {
+        surveyService.edit(surveyDTO);
+        questionAndAnswerService.update(surveyDTO.getQuestionDTO());
         return surveyDTO;
     }
 

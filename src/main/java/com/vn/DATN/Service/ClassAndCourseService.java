@@ -7,8 +7,5 @@ import java.util.List;
 
 public interface ClassAndCourseService {
     List<ClassCourse> linkClassWithCourse (ClassAndCourseDTO dto);
-
-    List<ClassCourse> editLinkClassWithCourse (ClassAndCourseDTO dto);
-
-    ClassCourse deleteLinkClassWithCourse (Integer classId);
+    void deleteLinkClassWithCourse (ClassAndCourseDTO classId);
 }

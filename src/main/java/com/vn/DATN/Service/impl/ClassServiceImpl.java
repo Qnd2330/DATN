@@ -40,11 +40,11 @@ public class ClassServiceImpl implements ClassService {
     public ClassDetailResponse getClassDetail(Integer classId) {
         List<Object[]> rows = classRepo.findClassDetailByClassId(classId);
 
-        if (rows.isEmpty()) throw new RuntimeException("Không tìm thấy lớp với ID: " + classId);
-
         Set<Integer> addedUserIds = new HashSet<>();
         Set<Integer> addedCourseIds = new HashSet<>();
-        List<StudentDTO> users = new ArrayList<>();
+        Map<Integer, String> teacherCache = new HashMap<>();
+
+        List<StudentDTO> students = new ArrayList<>();
         List<CourseDTO> courses = new ArrayList<>();
 
         Object[] firstRow = rows.get(0);
@@ -56,57 +56,50 @@ public class ClassServiceImpl implements ClassService {
 
         for (Object[] row : rows) {
             Integer userId = (Integer) row[4];
-            String userName = (String) row[5];
-            String phone = (String) row[6];
-            String email = (String) row[7];
+            // --- Student Info ---
             if (userId != null && addedUserIds.add(userId)) {
-                StudentDTO studentDTO = new StudentDTO();
-                studentDTO.setStudentId(userId);
-                studentDTO.setStudentName(userName);
-                studentDTO.setPhone(phone);
-                studentDTO.setEmail(email);
-                users.add(studentDTO);
+                StudentDTO student = new StudentDTO();
+                student.setStudentId(userId);
+                student.setStudentName((String) row[5]);
+                student.setPhone((String) row[6]);
+                student.setEmail((String) row[7]);
+                students.add(student);
             }
+
+            // --- Course Info ---
             Integer courseId = (Integer) row[8];
-            String courseName = (String) row[9];
-            Integer teacherId = (Integer) row[10];
-            Users teacher = userRepo.findById(teacherId).orElse(null);
             if (courseId != null && addedCourseIds.add(courseId)) {
-                CourseDTO courseDTO = new CourseDTO();
-                courseDTO.setCourseId(courseId);
-                courseDTO.setCourseName(courseName);
-                courseDTO.setTeacherName(teacher.getUsername());
-                courses.add(courseDTO);
+                CourseDTO course = new CourseDTO();
+                course.setCourseId(courseId);
+                course.setCourseName((String) row[9]);
+
+                Integer teacherId = (Integer) row[10];
+                if (teacherId != null) {
+                    String teacherName = teacherCache.computeIfAbsent(teacherId, id ->
+                            userRepo.findById(id).map(Users::getUsername).orElse("Unknown")
+                    );
+                    course.setTeacherName(teacherName);
+                } else {
+                    course.setTeacherName("Unknown");
+                }
+
+                courses.add(course);
             }
         }
 
-        response.setStudents(users);
+        response.setStudents(students);
         response.setCourses(courses);
         return response;
     }
 
     @Override
-    @Transactional
-    public void addUsersToClass(AddUsersToClassDTO dto) {
-        Class clazz = classRepo.findById(dto.getClassId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp"));
-
-        List<Users> users = userRepo.findAllById(dto.getUserIds());
-
-        List<UserClass> userClasses = new ArrayList<>();
-        for (Users user : users) {
-            UserClass uc = new UserClass();
-            uc.setUsers(user);
-            uc.setClasses(clazz);
-            userClasses.add(uc);
-        }
-
-        userAndClassRepo.saveAll(userClasses);
+    public List<Users> getAll() {
+        return userRepo.findAll();
     }
 
     @Override
     @Transactional
-    public void updateUsersInClass(AddUsersToClassDTO dto) {
+    public void addUsersToClass(AddUsersToClassDTO dto) {
         Class clazz = classRepo.findById(dto.getClassId())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp"));
 
@@ -146,7 +139,6 @@ public class ClassServiceImpl implements ClassService {
                 .collect(Collectors.toList());
         userAndClassRepo.deleteAll(toDelete);
     }
-
 
     @Override
     public UsersWithClassResponse getall(String className, Pageable pageable) {
@@ -212,6 +204,15 @@ public class ClassServiceImpl implements ClassService {
             return null;
         }
         return classs;
+    }
+
+    @Override
+    @Transactional
+    public void deleteLinkUser(AddUsersToClassDTO dto) {
+        Class aClass = findById(dto.getClassId());
+        Users users = userRepo.getReferenceById(dto.getUserIds().get(0));
+        UserClass userClass = userAndClassRepo.findByClassesAndUsers(aClass,users);
+        userAndClassRepo.delete(userClass);
     }
 
     @Override

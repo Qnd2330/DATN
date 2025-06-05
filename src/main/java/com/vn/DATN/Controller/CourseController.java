@@ -57,6 +57,23 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/get-all")
+    @PreAuthorize("hasAuthority('GET_COURSE_ACCESS') or hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getAll(){
+        try{
+            List<Course> courseList = courseService.getAll();
+            List<CourseResponse> courseResponses = courseList
+                    .stream()
+                    .map(CourseResponse::fromCourse)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(courseResponses);
+        }catch (RuntimeException ex){
+            log.error("Lỗi khi lấy danh sách khóa học", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_COURSE_ACCESS') or hasAuthority('CREATE_ACCESS')")
     public ResponseEntity<?> create(@Valid @RequestBody CourseDTO courseDTO) {

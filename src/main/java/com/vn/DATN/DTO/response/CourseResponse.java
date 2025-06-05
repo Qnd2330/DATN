@@ -28,7 +28,7 @@ public class CourseResponse {
         response.setStartDate(course.getStartDate());
         response.setEndDate(course.getEndDate());
         if (course.getUsers() != null) {
-            response.setTeacherName(course.getUsers().getUsername());
+            response.setTeacherName(course.getUsers().getUserNamee());
         } else {
             response.setTeacherName(null);
         }

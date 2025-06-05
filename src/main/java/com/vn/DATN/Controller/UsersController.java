@@ -1,39 +1,159 @@
 package com.vn.DATN.Controller;
 
 import com.vn.DATN.Common.BasicBeanRemote;
+import com.vn.DATN.DTO.request.FacultyDTO;
+import com.vn.DATN.DTO.request.RegisterRequest;
+import com.vn.DATN.DTO.request.StudentDTO;
+import com.vn.DATN.DTO.request.UserDTO;
+import com.vn.DATN.DTO.response.FacultyResponse;
+import com.vn.DATN.DTO.response.PaginatedResponse;
+import com.vn.DATN.DTO.response.UserResponse;
 import com.vn.DATN.Service.UsersService;
+import com.vn.DATN.entity.Faculty;
 import com.vn.DATN.entity.Users;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UsersController {
+    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
 
-    private final BasicBeanRemote basicBeanRemote;
     private final UsersService usersService;
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('READ_ACCESS')")
-    public ResponseEntity<List<Users>> getAllUsers() {
-        List<Users> users = basicBeanRemote.findAll(Users.class);
-        return ResponseEntity.ok(users);
+    public ResponseEntity<?> getAll(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+            try {
+                Pageable pageable = PageRequest.of(page, size);
+                Page<Users> usersPage = usersService.list(pageable);
+
+                List<UserResponse> userResponse = usersPage
+                        .stream()
+                        .map(UserResponse::fromUser)
+                        .collect(Collectors.toList());
+
+                PaginatedResponse<UserResponse> response = new PaginatedResponse<>(
+                        userResponse,
+                        usersPage.getNumber(),
+                        usersPage.getTotalElements(),
+                        usersPage.getTotalPages()
+                );
+                return ResponseEntity.ok(response);
+            } catch (RuntimeException ex) {
+                log.error("Lỗi khi lấy danh sách người dùng", ex);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            }
     }
+
+    @GetMapping("/get-all")
+    @PreAuthorize("hasAuthority('GET_USER_ACCESS') or hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getAll(){
+        try{
+            List<Users> users = usersService.getAll();
+            List<UserResponse> userResponse = users
+                    .stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(userResponse);
+        }catch (RuntimeException ex){
+            log.error("Lỗi khi lấy danh sách người dùng", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping
+    @PreAuthorize("hasAuthority('CREATE_ACCESS')")
+    public ResponseEntity<?> create(@RequestBody RegisterRequest request) {
+        try {
+            Users created = usersService.create(request);
+
+            UserResponse responseData = UserResponse.fromUser(created);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Thêm mới người dùng thành công");
+            response.put("data", responseData);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi tạo người dùng", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('UPDATE_ACCESS')")
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        try {
+            userDTO.setUserId(id);
+            Users updated = usersService.edit(userDTO);
+            UserResponse responseData = UserResponse.fromUser(updated);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Cập nhật người dùng thành công");
+            response.put("data", responseData);
+
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi cập nhật người dùng", ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    @PutMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('DELETE_ACCESS')")
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        try{
+            usersService.delete(id);
+            return ResponseEntity.ok("Xóa người dùng thành công");
+        }catch (RuntimeException ex) {
+            log.error("Lỗi khi cập nhật người dùng", ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
 
     @GetMapping("/me")
     public ResponseEntity<String> getCurrentUser() {
         return ResponseEntity.ok("This is your profile info");
     }
 
-    @PostMapping("/{username}/addRole/{roleName}")
+    @PostMapping("/{userId}/addRole/{roleName}")
     @PreAuthorize("hasAuthority('UPDATE_ACCESS')")
-    public ResponseEntity<Users> addRoleToUser(@PathVariable String username, @PathVariable String roleName) {
-        Users updatedUser = usersService.addRoleToUser(username, roleName);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<?> addRoleToUser(@PathVariable Integer userId, @PathVariable String roleName) {
+        try {
+            usersService.addRoleToUser(userId, roleName);
+            return ResponseEntity.ok("Thêm chức vụ thành công");
+        }catch (RuntimeException ex) {
+            log.error("Lỗi không tìm thấy người dùng hoặc chức quyền", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/addListStudent")
+    @PreAuthorize("hasAuthority('CREATE_ACCESS')")
+    public ResponseEntity<?> addListStudent (@RequestBody List<StudentDTO> studentDTO) {
+        try {
+            List<Users> usersList = usersService.addMultipleStudents(studentDTO);
+            return ResponseEntity.ok(usersList);
+        }catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

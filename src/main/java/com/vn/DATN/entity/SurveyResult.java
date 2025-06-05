@@ -25,6 +25,8 @@ public class SurveyResult {
     @ManyToOne
     @JoinColumn(name = "surveyId", referencedColumnName = "surveyId")
     private Survey survey;
+    @Column(name = "score")
+    private Integer score;
 
     @Column(name = "create_at")
     @JsonFormat(pattern = "dd/MM/yyyy")

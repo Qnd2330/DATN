@@ -29,15 +29,12 @@ public class Course {
     @OneToOne
     @JoinColumn(name = "teach_id", referencedColumnName = "userId")
     private Users users;
-
     @Column(name = "create_at")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime createAt;
-
     @Column(name = "updated_at")
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime updatedAt;
-
     @PrePersist
     protected void onCreate() {
         this.createAt = LocalDateTime.now();

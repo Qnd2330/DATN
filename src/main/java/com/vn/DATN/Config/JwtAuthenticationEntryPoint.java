@@ -14,6 +14,17 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        response.getWriter().write("""
+            {
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "Bạn không có quyền truy cập hoặc chưa đăng nhập.",
+                "path": "%s"
+            }
+            """.formatted(request.getRequestURI()));
     }
 }

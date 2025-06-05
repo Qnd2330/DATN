@@ -1,23 +1,72 @@
 package com.vn.DATN.Controller;
 
-import com.vn.DATN.DTO.mapper.SurveyMapper;
 import com.vn.DATN.DTO.request.SurveyDTO;
+import com.vn.DATN.DTO.response.PaginatedResponse;
+import com.vn.DATN.DTO.response.SurveyResponse;
 import com.vn.DATN.Service.SurveyAndQuestionService;
 import com.vn.DATN.Service.SurveyService;
 import com.vn.DATN.entity.Survey;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/survey")
 @RequiredArgsConstructor
 public class SurveyController {
+    private static final Logger log = LoggerFactory.getLogger(CourseController.class);
     private final SurveyService surveyService;
     private final SurveyAndQuestionService surveyAndQuestionService;
+
+    @GetMapping("/list")
+    @PreAuthorize("hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Survey> surveyPage = surveyService.getAll(pageable);
+
+            List<SurveyResponse> userResponse = surveyPage
+                    .stream()
+                    .map(SurveyResponse::fromSurvey)
+                    .collect(Collectors.toList());
+
+            PaginatedResponse<SurveyResponse> response = new PaginatedResponse<>(
+                    userResponse,
+                    surveyPage.getNumber(),
+                    surveyPage.getTotalElements(),
+                    surveyPage.getTotalPages()
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi lấy danh sách bản báo cáo", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getDetail(@PathVariable Integer id) {
+        try {
+            SurveyDTO response = surveyService.getById(id);
+            return ResponseEntity.ok(response);
+        }catch (RuntimeException ex) {
+            log.error("Lỗi khi lấy bản báo cáo", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('CREATE_SURVEY_ACCESS') or hasAuthority('CREATE_ACCESS')")
@@ -26,6 +75,7 @@ public class SurveyController {
             SurveyDTO created = surveyAndQuestionService.create(surveyDTO);
             return ResponseEntity.ok(created);
         } catch (RuntimeException ex) {
+            log.error("Lỗi khi tạo bản báo cáo", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
@@ -35,10 +85,10 @@ public class SurveyController {
     public ResponseEntity<?> update(@PathVariable Integer id,@RequestBody SurveyDTO surveyDTO) {
         try {
             surveyDTO.setSurveyId(id);
-            Survey updated = surveyService.edit(surveyDTO);
-            SurveyDTO result = SurveyMapper.INSTANCE.toDTO(updated);
-            return ResponseEntity.ok(result);
+            SurveyDTO update = surveyAndQuestionService.update(surveyDTO);
+            return ResponseEntity.ok(update);
         } catch (RuntimeException ex) {
+            log.error("Lỗi khi cập nhật bản báo cáo", ex);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }

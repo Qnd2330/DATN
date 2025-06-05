@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,13 +48,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<RoleDTO> getAll() {
-        return roleRepository.findAll().stream().map(role -> {
-            RoleDTO dto = new RoleDTO();
-            dto.setId(role.getRoleId());
-            dto.setRoleName(role.getRoleName());
-            dto.setPermissionIds((Set<Integer>) role.getPermissions().stream().map(Permission::getPermissionId).toList());
-            return dto;
-        }).collect(Collectors.toList());
+    public List<Role> getAll() {
+        return roleRepository.findAll();
     }
 }

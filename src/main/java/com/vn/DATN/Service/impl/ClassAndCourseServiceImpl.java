@@ -8,6 +8,7 @@ import com.vn.DATN.Service.repositories.ClassAndCourseRepo;
 import com.vn.DATN.entity.Class;
 import com.vn.DATN.entity.ClassCourse;
 import com.vn.DATN.entity.Course;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,39 +27,21 @@ public class ClassAndCourseServiceImpl implements ClassAndCourseService {
     private final CourseService courseService;
 
     @Override
+    @Transactional
     public List<ClassCourse> linkClassWithCourse(ClassAndCourseDTO dto) {
-        Class clazz = getClass(dto.getClassId()); // lấy class 1 lần
-        List<Course> courses = dto.getCourseId().stream()
-                .map(this::getCourse)
-                .collect(Collectors.toList());
-
-        List<ClassCourse> classCourses = courses.stream()
-                .map(course -> ClassCourse.builder()
-                        .classes(clazz)
-                        .course(course)
-                        .build())
-                .collect(Collectors.toList());
-
-        return classAndCourseRepo.saveAll(classCourses);
-    }
-
-    @Override
-    public List<ClassCourse> editLinkClassWithCourse(ClassAndCourseDTO dto) {
         Class clazz = getClass(dto.getClassId());
-        // 1. Lấy các liên kết hiện tại từ DB
+        
         List<ClassCourse> existingLinks = classAndCourseRepo.findByClasses(clazz);
         Set<Integer> existingCourseIds = existingLinks.stream()
                 .map(cc -> cc.getCourse().getCourseId())
                 .collect(Collectors.toSet());
 
         Set<Integer> newCourseIds = new HashSet<>(dto.getCourseId());
-
-        // 2. Xác định các liên kết cần xóa (có trong DB nhưng không còn trong DTO)
+        
         List<ClassCourse> toDelete = existingLinks.stream()
                 .filter(cc -> !newCourseIds.contains(cc.getCourse().getCourseId()))
                 .toList();
-
-        // 3. Xác định các liên kết cần thêm (có trong DTO nhưng không có trong DB)
+        
         List<ClassCourse> toAdd = newCourseIds.stream()
                 .filter(id -> !existingCourseIds.contains(id))
                 .map(id -> ClassCourse.builder()
@@ -66,14 +49,11 @@ public class ClassAndCourseServiceImpl implements ClassAndCourseService {
                         .course(getCourse(id))
                         .build())
                 .toList();
-
-        // 4. Thực hiện cập nhật
+        
         classAndCourseRepo.deleteAll(toDelete);
-        List<ClassCourse> addedLinks = classAndCourseRepo.saveAll(toAdd);
+        classAndCourseRepo.saveAll(toAdd);
 
-        // 5. Trả về toàn bộ liên kết hiện tại sau cập nhật
-        List<ClassCourse> updatedLinks = classAndCourseRepo.findByClasses(clazz);
-        return updatedLinks;
+        return classAndCourseRepo.findByClasses(clazz);
     }
 
     private Course getCourse(Integer courseId) {
@@ -85,15 +65,19 @@ public class ClassAndCourseServiceImpl implements ClassAndCourseService {
     }
 
     private Class getClass(Integer classId) {
-        Class classs = classService.findById(classId);
-        if(classs == null ){
+        Class thisClass = classService.findById(classId);
+        if(thisClass == null ){
             throw new RuntimeException("Lớp này không tồn tại");
         }
-        return classs;
+        return thisClass;
     }
 
     @Override
-    public ClassCourse deleteLinkClassWithCourse(Integer classId) {
-        return null;
+    @Transactional
+    public void deleteLinkClassWithCourse(ClassAndCourseDTO classAndCourseDTO) {
+            Class aClass = getClass(classAndCourseDTO.getClassId());
+            Course course = getCourse(classAndCourseDTO.getCourseId().get(0));
+            ClassCourse classCourse = classAndCourseRepo.findByClassesAndCourse(aClass, course);
+            classAndCourseRepo.delete(classCourse);
     }
 }

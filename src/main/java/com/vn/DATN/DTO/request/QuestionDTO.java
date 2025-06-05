@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,5 +14,5 @@ public class QuestionDTO {
     private Integer questionId;
     private String questionText;
     private String type;
-    private List<AnswerDTO> answers;
+    private List<AnswerDTO> answers = new ArrayList<>();;
 }

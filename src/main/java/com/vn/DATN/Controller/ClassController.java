@@ -130,17 +130,6 @@ public class ClassController {
         }
     }
 
-    @PutMapping("/update-users")
-    @PreAuthorize("hasAuthority('UPDATE_CLASS_ACCESS') or hasAuthority('UPDATE_ACCESS')")
-    public ResponseEntity<?> updateUsersInClassSmart(@RequestBody AddUsersToClassDTO dto) {
-        try {
-            classService.updateUsersInClass(dto);
-            return ResponseEntity.ok("Cập nhật danh sách học sinh thành công");
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
-
     @PostMapping("/addCourse")
     @PreAuthorize("hasAuthority('CREATE_CLASS_ACCESS') or hasAuthority('UPDATE_ACCESS')")
     public ResponseEntity<?> addCourse(@RequestBody ClassAndCourseDTO dto) {
@@ -155,17 +144,25 @@ public class ClassController {
         }
     }
 
-    @PutMapping("/updateCourse")
-    @PreAuthorize("hasAuthority('UPDATE_CLASS_ACCESS') or hasAuthority('UPDATE_ACCESS')")
-    public ResponseEntity<?> updateCourse(@RequestBody ClassAndCourseDTO dto) {
+    @DeleteMapping("/course")
+    @PreAuthorize("hasAuthority('DELETE_CLASS_ACCESS') or hasAuthority('DELETE_ACCESS')")
+    public ResponseEntity<String> deleteLinkCourse(@RequestBody ClassAndCourseDTO dto) {
         try {
-            List<ClassCourse> updated = classAndCourseService.editLinkClassWithCourse(dto);
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Cập nhật khóa học thành công");
-            response.put("data", updated);
-            return ResponseEntity.ok(response);
+            classAndCourseService.deleteLinkClassWithCourse(dto);
+            return ResponseEntity.ok("Xóa thành công");
         } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/user")
+    @PreAuthorize("hasAuthority('DELETE_CLASS_ACCESS') or hasAuthority('DELETE_ACCESS')")
+    public ResponseEntity<String> deleteLinkUser(@RequestBody AddUsersToClassDTO dto) {
+        try {
+            classService.deleteLinkUser(dto);
+            return ResponseEntity.ok("Xóa thành công");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 

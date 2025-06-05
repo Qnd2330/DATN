@@ -5,7 +5,6 @@ import com.vn.DATN.entity.Survey;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 public interface SurveyService {
     Page<Survey> getAll (Pageable pageable);
 
@@ -14,6 +13,7 @@ public interface SurveyService {
     Survey edit(SurveyDTO surveyDTO);
 
     Survey findById(Integer surveyId);
+    SurveyDTO getById(Integer surveyId);
 
     boolean existsById(Integer surveyId);
 

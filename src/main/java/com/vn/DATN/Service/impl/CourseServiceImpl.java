@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
@@ -22,6 +24,11 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<Course> listCourse(Pageable pageable) {
         return courseRepo.findAll(pageable);
+    }
+
+    @Override
+    public List<Course> getAll() {
+        return courseRepo.findAll();
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,19 +33,59 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
             Question question = getQuestion(questionDTO);
             for (AnswerDTO answerDTO : questionDTO.getAnswers()) {
                 Answer answer = getAnswer(answerDTO);
-                boolean exists = questionAndAnswerRepo.findByQuestionAndAnswer(question, answer).isPresent();
-                if (!exists) {
-                    questionAnswers.add(
-                            QuestionAnswer.builder()
-                                    .question(question)
-                                    .answer(answer)
-                                    .build()
-                    );
+                Optional<QuestionAnswer> existingQA = questionAndAnswerRepo.findByQuestionAndAnswer(question, answer);
+                if (existingQA.isPresent()) {
+                    questionAnswers.add(existingQA.get());
+                } else {
+                    QuestionAnswer qa = QuestionAnswer.builder()
+                            .question(question)
+                            .answer(answer)
+                            .build();
+                    questionAnswers.add(qa);
                 }
             }
         }
-        List<QuestionAnswer> questionAnswersList = questionAndAnswerRepo.saveAll(questionAnswers);
-        return questionAnswersList;
+        List<QuestionAnswer> toSave = questionAnswers.stream()
+                .filter(qa -> qa.getId() == null)
+                .toList();
+
+        if (!toSave.isEmpty()) {
+            questionAndAnswerRepo.saveAll(toSave);
+        }
+        return questionAnswers;
+    }
+
+    @Override
+    @Transactional
+    public List<QuestionAnswer> update(List<QuestionDTO> request) {
+        List<QuestionAnswer> updatedQAList = new ArrayList<>();
+
+        for (QuestionDTO questionDTO : request) {
+
+            Question question = questionService.edit(questionDTO);
+
+            for (AnswerDTO answerDTO : questionDTO.getAnswers()) {
+                Answer answer = answerService.edit(answerDTO);
+
+                Optional<QuestionAnswer> existingQA = questionAndAnswerRepo.findByQuestionAndAnswer(question, answer);
+                QuestionAnswer qa = existingQA.orElseGet(() -> QuestionAnswer.builder()
+                        .question(question)
+                        .answer(answer)
+                        .build());
+
+                updatedQAList.add(qa);
+            }
+        }
+
+        List<QuestionAnswer> toSave = updatedQAList.stream()
+                .filter(qa -> qa.getId() == null)
+                .toList();
+
+        if (!toSave.isEmpty()) {
+            questionAndAnswerRepo.saveAll(toSave);
+        }
+
+        return updatedQAList;
     }
 
     @Override

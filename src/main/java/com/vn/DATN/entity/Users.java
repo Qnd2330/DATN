@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class Users implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
     @Column(name = "userName")
@@ -41,6 +41,9 @@ public class Users implements UserDetails {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    private boolean deleted;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_user",
             joinColumns = @JoinColumn(name = "userId"),
@@ -71,6 +74,10 @@ public class Users implements UserDetails {
 
     @Override
     public String getUsername() {
+        return String.valueOf(userId);
+    }
+
+    public String getUserNamee() {
         return userName;
     }
 

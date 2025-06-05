@@ -11,6 +11,8 @@ import java.util.List;
 public interface QuestionAndAnswerService {
     List<QuestionAnswer> create(List<QuestionDTO> questionDTO);
 
+    List<QuestionAnswer> update(List<QuestionDTO> request);
+
     Question getQuestion(QuestionDTO questionDTO);
 
     Answer getAnswer(AnswerDTO answerDTO);

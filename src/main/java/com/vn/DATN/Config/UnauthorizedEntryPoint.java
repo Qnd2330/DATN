@@ -1,7 +1,5 @@
 package com.vn.DATN.Config;
 
-
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -18,10 +16,18 @@ public class UnauthorizedEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException authException
-    ) throws IOException, ServletException {
-        // Trả về mã lỗi 401 khi không có token hoặc token sai
-        response.setContentType("application/json");
+    ) throws IOException {
+
+        response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("{\"error\": \"Unauthorized or invalid token\"}");
+
+        response.getWriter().write("""
+            {
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "Token không hợp lệ hoặc bạn chưa đăng nhập.",
+                "path": "%s"
+            }
+            """.formatted(request.getRequestURI()));
     }
 }
