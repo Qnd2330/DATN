@@ -1,0 +1,73 @@
+### Test API tìm kiếm user động
+
+### 1. Tìm kiếm theo tên user
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "userName": "Nguyễn"
+}
+
+### 2. Tìm kiếm theo email
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "email": "gmail"
+}
+
+### 3. Tìm kiếm theo số điện thoại
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "phoneNumber": "0123"
+}
+
+### 4. Tìm kiếm theo ngày sinh
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "birthDate": "2000-01-01"
+}
+
+### 5. Tìm kiếm theo giới tính
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "gender": "NAM"
+}
+
+### 6. Tìm kiếm theo role
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "role": "STUDENT"
+}
+
+### 7. Tìm kiếm kết hợp nhiều điều kiện
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{
+  "userName": "Nguyễn",
+  "gender": "NAM",
+  "role": "STUDENT"
+}
+
+### 8. Tìm kiếm không có filter (lấy tất cả)
+POST http://localhost:8080/users/search?page=0&size=10
+Content-Type: application/json
+
+{}
+
+### 9. Tìm kiếm với phân trang
+POST http://localhost:8080/users/search?page=1&size=5
+Content-Type: application/json
+
+{
+  "role": "STUDENT"
+} 

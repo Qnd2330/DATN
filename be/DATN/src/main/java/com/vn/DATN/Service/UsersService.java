@@ -3,6 +3,7 @@ package com.vn.DATN.Service;
 import com.vn.DATN.DTO.request.RegisterRequest;
 import com.vn.DATN.DTO.request.StudentDTO;
 import com.vn.DATN.DTO.request.UserDTO;
+import com.vn.DATN.DTO.request.UserSearchFilterDTO;
 import com.vn.DATN.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +16,11 @@ public interface UsersService {
 
     List<Users> getAll();
 
+    List<Users> getAllManager();
+
     List<Users> addMultipleStudents(List<StudentDTO> studentDTOList);
 
-    List<Users> importStudentsFromExcel(MultipartFile file);
+    List<Users> importStudentsFromExcel(MultipartFile file, String roleName);
 
     Users create(RegisterRequest request);
 
@@ -32,4 +35,10 @@ public interface UsersService {
     Users findByUserName (String userName);
 
     Users addRoleToUser(Integer userId, String roleName);
+
+    List<String> getAllRoleNames();
+    
+    Page<Users> searchUsers(UserSearchFilterDTO filter, Pageable pageable);
+    
+    List<Users> getUsersByManagerOrTeacherRole();
 }

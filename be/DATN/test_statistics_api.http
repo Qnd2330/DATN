@@ -1,0 +1,39 @@
+### Test Statistics APIs (Chỉ cho MANAGER)
+
+### 1. Lấy thống kê tổng thể
+GET http://localhost:2330/statistics/overview
+Authorization: Bearer {{token}}
+
+### 2. Lấy thống kê theo khoa
+GET http://localhost:2330/statistics/by-faculty
+Authorization: Bearer {{token}}
+
+### 3. Lấy thống kê theo lớp
+GET http://localhost:2330/statistics/by-class
+Authorization: Bearer {{token}}
+
+### 4. Lấy thống kê tổng thể theo ngày tháng (từ đầu năm đến hiện tại)
+GET http://localhost:2330/statistics/overview/by-date?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 5. Lấy thống kê theo khoa theo ngày tháng (từ đầu năm đến hiện tại)
+GET http://localhost:2330/statistics/by-faculty/by-date?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 6. Lấy thống kê theo lớp theo ngày tháng (từ đầu năm đến hiện tại)
+GET http://localhost:2330/statistics/by-class/by-date?startDate=2024-01-01&endDate=2024-12-31
+Authorization: Bearer {{token}}
+
+### 7. Lấy tất cả thống kê
+GET http://localhost:2330/statistics/all
+Authorization: Bearer {{token}}
+
+### 8. Lấy danh sách sinh viên chưa đánh giá theo viewer ID
+GET http://localhost:2330/incomplete-surveys/list/by-viewer/1/paginated?page=0&size=10
+Authorization: Bearer {{token}}
+
+### Lưu ý:
+### - Tất cả API thống kê chỉ dành cho role MANAGER
+### - MANAGER chỉ có thể xem thống kê của các faculty mà họ được liên kết
+### - Format ngày tháng: yyyy-MM-dd
+### - Thay YOUR_JWT_TOKEN_HERE bằng token thực từ login API của MANAGER 

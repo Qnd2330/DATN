@@ -1,6 +1,7 @@
 package com.vn.DATN.Controller;
 
 import com.vn.DATN.DTO.request.FacultyDTO;
+import com.vn.DATN.DTO.request.FacultyWithManagerDTO;
 import com.vn.DATN.DTO.response.FacultyResponse;
 import com.vn.DATN.DTO.response.PaginatedResponse;
 import com.vn.DATN.Service.FacultyService;
@@ -35,19 +36,7 @@ public class FacultyController {
             @RequestParam(defaultValue = "10") int size) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            Page<Faculty> facultyPage = facultyService.list(pageable);
-
-            List<FacultyResponse> facultyResponses = facultyPage
-                    .stream()
-                    .map(FacultyResponse::fromFaculty)
-                    .collect(Collectors.toList());
-
-            PaginatedResponse<FacultyResponse> response = new PaginatedResponse<>(
-                    facultyResponses,
-                    facultyPage.getNumber(),
-                    facultyPage.getTotalElements(),
-                    facultyPage.getTotalPages()
-            );
+            Page<FacultyWithManagerDTO> response = facultyService.list(pageable);
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             log.error("Lỗi khi lấy danh sách khoa", ex);
@@ -64,6 +53,21 @@ public class FacultyController {
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             log.error("Lỗi khi lấy danh sách khoa", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GET_FACULTY_ACCESS') or hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
+        try {
+            FacultyWithManagerDTO faculty = facultyService.getById(id);
+            if (faculty == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy khoa với ID: " + id);
+            }
+            return ResponseEntity.ok(faculty);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi lấy thông tin khoa", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }

@@ -1,0 +1,63 @@
+### Test API Filter cho Incomplete Surveys
+
+### 1. Lấy danh sách sinh viên chưa đánh giá với filter (không có filter)
+GET http://localhost:2330/incomplete-surveys/list/1/filter
+Authorization: Bearer {{token}}
+
+### 2. Lấy danh sách sinh viên chưa đánh giá với filter theo tên sinh viên
+GET http://localhost:2330/incomplete-surveys/list/1/filter?userName=Nguyen
+Authorization: Bearer {{token}}
+
+### 3. Lấy danh sách sinh viên chưa đánh giá với filter theo khoa
+GET http://localhost:2330/incomplete-surveys/list/1/filter?facultyName=Công nghệ thông tin
+Authorization: Bearer {{token}}
+
+### 4. Lấy danh sách sinh viên chưa đánh giá với filter theo lớp
+GET http://localhost:2330/incomplete-surveys/list/1/filter?className=CNTT1
+Authorization: Bearer {{token}}
+
+### 5. Lấy danh sách sinh viên chưa đánh giá với filter theo tên khảo sát
+GET http://localhost:2330/incomplete-surveys/list/1/filter?surveyName=Đánh giá
+Authorization: Bearer {{token}}
+
+### 6. Lấy danh sách sinh viên chưa đánh giá với filter theo khoảng thời gian
+GET http://localhost:2330/incomplete-surveys/list/1/filter?deadlineFrom=2024-01-01&deadlineTo=2024-12-31
+Authorization: Bearer {{token}}
+
+### 7. Lấy danh sách sinh viên chưa đánh giá với nhiều filter
+GET http://localhost:2330/incomplete-surveys/list/1/filter?userName=Nguyen&facultyName=Công nghệ thông tin&className=CNTT1
+Authorization: Bearer {{token}}
+
+### Test API Filter cho Completed Surveys
+
+### 8. Lấy danh sách sinh viên đã làm báo cáo với filter (không có filter)
+GET http://localhost:2330/completed-survey-students/1/filter
+Authorization: Bearer {{token}}
+
+### 9. Lấy danh sách sinh viên đã làm báo cáo với filter theo tên sinh viên
+GET http://localhost:2330/completed-survey-students/1/filter?userName=Nguyen
+Authorization: Bearer {{token}}
+
+### 10. Lấy danh sách sinh viên đã làm báo cáo với filter theo khoa
+GET http://localhost:2330/completed-survey-students/1/filter?facultyName=Công nghệ thông tin
+Authorization: Bearer {{token}}
+
+### 11. Lấy danh sách sinh viên đã làm báo cáo với filter theo lớp
+GET http://localhost:2330/completed-survey-students/1/filter?className=CNTT1
+Authorization: Bearer {{token}}
+
+### 12. Lấy danh sách sinh viên đã làm báo cáo với filter theo tên báo cáo
+GET http://localhost:2330/completed-survey-students/1/filter?surveyTitle=Báo cáo
+Authorization: Bearer {{token}}
+
+### 13. Lấy danh sách sinh viên đã làm báo cáo với filter theo khoảng thời gian
+GET http://localhost:2330/completed-survey-students/1/filter?submitTimeFrom=2024-01-01T00:00:00&submitTimeTo=2024-12-31T23:59:59
+Authorization: Bearer {{token}}
+
+### 14. Lấy danh sách sinh viên đã làm báo cáo với filter và phân trang
+GET http://localhost:2330/completed-survey-students/1/filter/paginated?page=0&size=10&userName=Nguyen&facultyName=Công nghệ thông tin
+Authorization: Bearer {{token}}
+
+### 15. Lấy danh sách sinh viên đã làm báo cáo với filter và phân trang (trang 2)
+GET http://localhost:2330/completed-survey-students/1/filter/paginated?page=1&size=5&className=CNTT1
+Authorization: Bearer {{token}} 

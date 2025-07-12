@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +40,29 @@ public class SurveyAndQuestionServiceImpl implements SurveyAndQuestionService {
     }
 
     public SurveyDTO update (SurveyDTO surveyDTO) {
-        surveyService.edit(surveyDTO);
-        questionAndAnswerService.update(surveyDTO.getQuestionDTO());
+        Survey survey = surveyService.edit(surveyDTO);
+        List<SurveyQuestion> existingSurveyQuestions = surveyAndQuestionRepo.findBySurvey(survey);
+        Set<Integer> existingQuestionAnswerIds = existingSurveyQuestions.stream()
+                .map(sq -> sq.getQuestionAnswer().getId())
+                .collect(Collectors.toSet());
+        List<SurveyQuestion> surveyQuestions = new ArrayList<>();
+        List<QuestionAnswer> questionsDTO = questionAndAnswerService.update(surveyDTO.getQuestionDTO());
+
+        for (QuestionAnswer question : questionsDTO) {
+            if (!existingQuestionAnswerIds.contains(question.getId())) {
+                surveyQuestions.add(SurveyQuestion.builder()
+                        .survey(survey)
+                        .questionAnswer(question)
+                        .build());
+            }
+        }
+
+        // Chỉ save khi có SurveyQuestion mới
+        if (!surveyQuestions.isEmpty()) {
+            surveyAndQuestionRepo.saveAll(surveyQuestions);
+        }
+
+
         return surveyDTO;
     }
 

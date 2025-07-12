@@ -1,0 +1,21 @@
+### Test API lấy danh sách users có role MANAGER hoặc TEACHER
+
+# Lấy danh sách users có role MANAGER hoặc TEACHER
+GET http://localhost:8080/users/manager-teacher
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+###
+
+# Test với token không hợp lệ
+GET http://localhost:8080/users/manager-teacher
+Authorization: Bearer invalid_token
+Content-Type: application/json
+
+###
+
+# Test không có token
+GET http://localhost:8080/users/manager-teacher
+Content-Type: application/json
+
+### 

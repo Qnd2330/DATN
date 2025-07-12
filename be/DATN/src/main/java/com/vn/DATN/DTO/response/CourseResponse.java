@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -15,18 +15,18 @@ public class CourseResponse {
 
     private Integer courseId;
     private String courseName;
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate startDate;
-    @JsonFormat(pattern = "dd/MM/yyyy")
-    private LocalDate endDate;
     private String teacherName;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDateTime createAt;
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    private LocalDateTime updatedAt;
 
     public static CourseResponse fromCourse(Course course) {
         CourseResponse response = new CourseResponse();
         response.setCourseId(course.getCourseId());
         response.setCourseName(course.getCourseName());
-        response.setStartDate(course.getStartDate());
-        response.setEndDate(course.getEndDate());
+        response.setCreateAt(course.getCreateAt());
+        response.setUpdatedAt(course.getUpdatedAt());
         if (course.getUsers() != null) {
             response.setTeacherName(course.getUsers().getUserNamee());
         } else {

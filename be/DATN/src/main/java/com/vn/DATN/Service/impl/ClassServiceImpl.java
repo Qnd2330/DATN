@@ -138,6 +138,11 @@ public class ClassServiceImpl implements ClassService {
                 .filter(uc -> toRemove.contains(uc.getUsers().getUserId()))
                 .collect(Collectors.toList());
         userAndClassRepo.deleteAll(toDelete);
+
+        // --- Cập nhật lại totalStudent ---
+        int totalStudent = userAndClassRepo.findByClasses(clazz).size();
+        clazz.setTotalStudent(totalStudent);
+        classRepo.save(clazz);
     }
 
     @Override
@@ -213,6 +218,10 @@ public class ClassServiceImpl implements ClassService {
         Users users = userRepo.getReferenceById(dto.getUserIds().get(0));
         UserClass userClass = userAndClassRepo.findByClassesAndUsers(aClass,users);
         userAndClassRepo.delete(userClass);
+        // --- Cập nhật lại totalStudent ---
+        int totalStudent = userAndClassRepo.findByClasses(aClass).size();
+        aClass.setTotalStudent(totalStudent);
+        classRepo.save(aClass);
     }
 
     @Override

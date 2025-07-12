@@ -1,0 +1,21 @@
+### Test API Filter đơn giản (sau khi sửa lỗi type mismatch)
+
+### 1. Test Incomplete Surveys Filter - không có filter
+GET http://localhost:2330/incomplete-surveys/list/1/filter
+Authorization: Bearer {{token}}
+
+### 2. Test Incomplete Surveys Filter - chỉ với userName
+GET http://localhost:2330/incomplete-surveys/list/1/filter?userName=Nguyen
+Authorization: Bearer {{token}}
+
+### 3. Test Completed Surveys Filter - không có filter
+GET http://localhost:2330/completed-survey-students/1/filter
+Authorization: Bearer {{token}}
+
+### 4. Test Completed Surveys Filter - chỉ với userName
+GET http://localhost:2330/completed-survey-students/1/filter?userName=Nguyen
+Authorization: Bearer {{token}}
+
+### 5. Test Completed Surveys Filter với pagination
+GET http://localhost:2330/completed-survey-students/1/filter/paginated?page=0&size=5
+Authorization: Bearer {{token}} 

@@ -6,6 +6,7 @@ import com.vn.DATN.entity.Users;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 @Data
 public class UserResponse {
     String token;
@@ -21,10 +22,13 @@ public class UserResponse {
     private String email;
 
     private String password;
+    private String gender; // NAM hoặc NU
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime createAt;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDateTime updatedAt;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate birthDate;
 
     public static UserResponse fromUserWithToken(Users users, String token){
         UserResponse userResponse = new UserResponse();
@@ -35,8 +39,10 @@ public class UserResponse {
         userResponse.setPhoneNumber(users.getPhoneNumber());
         userResponse.setEmail(users.getEmail());
         userResponse.setPassword(users.getPassword());
+        userResponse.setGender(users.getGender());
         userResponse.setCreateAt(users.getCreateAt());
         userResponse.setUpdatedAt(users.getUpdatedAt());
+        userResponse.setBirthDate(users.getBirthDate());
         return userResponse;
     }
 
@@ -48,8 +54,10 @@ public class UserResponse {
         userResponse.setPhoneNumber(users.getPhoneNumber());
         userResponse.setEmail(users.getEmail());
         userResponse.setPassword(users.getPassword());
+        userResponse.setGender(users.getGender());
         userResponse.setCreateAt(users.getCreateAt());
         userResponse.setUpdatedAt(users.getUpdatedAt());
+        userResponse.setBirthDate(users.getBirthDate());
         return userResponse;
     }
 }

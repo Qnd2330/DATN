@@ -86,13 +86,43 @@ public class UsersController {
         }
     }
 
-    @PostMapping("/import-students")
-    public ResponseEntity<?> importStudents(@RequestParam("file") MultipartFile file) {
+    @GetMapping("/get-all-manager")
+    @PreAuthorize("hasAuthority('GET_USER_ACCESS') or hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getAllManager(){
+        try{
+            List<Users> users = usersService.getAllManager();
+            List<UserResponse> userResponse = users
+                    .stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(userResponse);
+        }catch (RuntimeException ex){
+            log.error("Lỗi khi lấy danh sách người dùng", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @GetMapping("/roles")
+    @PreAuthorize("hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getAllRoles() {
         try {
-            List<Users> students = usersService.importStudentsFromExcel(file);
-            return ResponseEntity.ok("Thêm " + students.size() + " sinh viên thành công!");
+            List<String> roles = usersService.getAllRoleNames();
+            return ResponseEntity.ok(roles);
         } catch (RuntimeException ex) {
-            log.error("Lỗi khi tạo người dùng", ex);
+            log.error("Lỗi khi lấy danh sách role", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/import-students")
+    public ResponseEntity<?> importStudents(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "roleName", defaultValue = "STUDENT") String roleName) {
+        try {
+            List<Users> students = usersService.importStudentsFromExcel(file, roleName);
+            return ResponseEntity.ok("Thêm " + students.size() + " người dùng với role " + roleName + " thành công!");
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi import người dùng", ex);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
@@ -208,10 +238,59 @@ public class UsersController {
     @PreAuthorize("hasAuthority('CREATE_ACCESS')")
     public ResponseEntity<?> addListStudent (@RequestBody List<StudentDTO> studentDTO) {
         try {
-            List<Users> usersList = usersService.addMultipleStudents(studentDTO);
-            return ResponseEntity.ok(usersList);
-        }catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            List<Users> users = usersService.addMultipleStudents(studentDTO);
+            List<UserResponse> userResponse = users
+                    .stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(userResponse);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi thêm danh sách sinh viên", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
+    @PostMapping("/search")
+    @PreAuthorize("hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> searchUsers(
+            @RequestBody UserSearchFilterDTO filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Users> usersPage = usersService.searchUsers(filter, pageable);
+
+            List<UserResponse> userResponse = usersPage
+                    .stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+
+            PaginatedResponse<UserResponse> response = new PaginatedResponse<>(
+                    userResponse,
+                    usersPage.getNumber(),
+                    usersPage.getTotalElements(),
+                    usersPage.getTotalPages()
+            );
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi tìm kiếm người dùng", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+    
+    @GetMapping("/manager-teacher")
+    @PreAuthorize("hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getUsersByManagerOrTeacherRole() {
+        try {
+            List<Users> users = usersService.getUsersByManagerOrTeacherRole();
+            List<UserResponse> userResponse = users
+                    .stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(userResponse);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi lấy danh sách người dùng có role MANAGER hoặc TEACHER", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 }

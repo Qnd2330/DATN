@@ -31,7 +31,7 @@ public class AnswerServiceImpl implements AnswerService {
     public Answer edit(AnswerDTO request) {
         Answer answer = answerRepo.getReferenceById(request.getAnswerId());
         if (answer == null) {
-            return answer;
+            throw new RuntimeException("Không tìm thấy câu trả lời với ID: " + request.getAnswerId());
         }
         answer.setContent(request.getContent());
         return answerRepo.saveAndFlush(answer);

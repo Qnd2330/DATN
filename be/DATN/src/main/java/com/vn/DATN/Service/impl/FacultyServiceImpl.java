@@ -1,9 +1,14 @@
 package com.vn.DATN.Service.impl;
 
 import com.vn.DATN.DTO.request.FacultyDTO;
+import com.vn.DATN.DTO.request.FacultyWithManagerDTO;
 import com.vn.DATN.Service.FacultyService;
+import com.vn.DATN.Service.repositories.FacultyAndUserRepo;
 import com.vn.DATN.Service.repositories.FacultyRepo;
+import com.vn.DATN.Service.repositories.UserRepo;
 import com.vn.DATN.entity.Faculty;
+import com.vn.DATN.entity.FacultyUser;
+import com.vn.DATN.entity.Users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,9 +21,13 @@ import java.util.List;
 public class FacultyServiceImpl implements FacultyService {
     private final FacultyRepo facultyRepo;
 
+    private final UserRepo userRepo;
+
+    private final FacultyAndUserRepo facultyAndUserRepo;
+
     @Override
-    public Page<Faculty> list(Pageable pageable) {
-        return facultyRepo.findAll(pageable);
+    public Page<FacultyWithManagerDTO> list(Pageable pageable) {
+        return facultyRepo.getFacultyWithManagerAndDates(pageable);
     }
 
     @Override
@@ -27,21 +36,44 @@ public class FacultyServiceImpl implements FacultyService {
     }
 
     @Override
+    public FacultyWithManagerDTO getById(Integer id) {
+        return facultyRepo.getFacultyWithManagerById(id);
+    }
+
+    @Override
     public Faculty create(FacultyDTO facultyDTO) {
+        Users users =userRepo.findById(facultyDTO.getUserId()).orElse(null);
+        if(users == null) {
+            throw new RuntimeException("Không tìm thấy giáo viên");
+        }
         Faculty faculty = Faculty.builder()
                 .facultyName(facultyDTO.getFacultyName())
                 .build();
-        return facultyRepo.save(faculty);
+        FacultyUser facultyUser = FacultyUser.builder()
+                .faculty(faculty)
+                .users(users)
+                .build();
+        facultyRepo.save(faculty);
+        facultyAndUserRepo.save(facultyUser);
+        return faculty;
     }
 
     @Override
     public Faculty edit(FacultyDTO facultyDTO) {
+        Users users =userRepo.findById(facultyDTO.getUserId()).orElse(null);
+        if(users == null) {
+            throw new RuntimeException("Không tìm thấy giáo viên");
+        }
         Faculty faculty = findById(facultyDTO.getFacultyId());
         if(faculty == null){
             throw new RuntimeException("Không tìm thấy Faculty");
         }
+        FacultyUser facultyUser = facultyAndUserRepo.findByFaculty(faculty);
+        facultyUser.setUsers(users);
         faculty.setFacultyName(facultyDTO.getFacultyName());
-        return facultyRepo.saveAndFlush(faculty);
+        facultyRepo.saveAndFlush(faculty);
+        facultyAndUserRepo.saveAndFlush(facultyUser);
+        return faculty ;
     }
 
     @Override

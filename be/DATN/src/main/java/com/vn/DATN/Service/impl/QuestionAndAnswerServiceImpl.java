@@ -58,7 +58,7 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
         List<QuestionAnswer> updatedQAList = new ArrayList<>();
 
         for (QuestionDTO questionDTO : request) {
-            Question question = questionService.edit(questionDTO);
+            Question question = getQuestion(questionDTO);
 
             if (QuestionType.SingleChoice.toString().equals(questionDTO.getType())) {
                 updatedQAList.addAll(
@@ -76,7 +76,6 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
         if (!toSave.isEmpty()) {
             questionAndAnswerRepo.saveAll(toSave);
         }
-
         return updatedQAList;
     }
 
@@ -87,26 +86,19 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
         if (answerDTO.getAnswerId() == null) {
             answer = answerService.create(answerDTO);
         } else {
-            try {
-                answer = answerService.findById(answerDTO.getAnswerId());
-            } catch (EntityNotFoundException ex) {
-                throw new RuntimeException("Không tìm thấy câu trả lời với ID: " + answerDTO.getAnswerId());
-            }
+            answer = answerService.edit(answerDTO);
         }
         return answer;
     }
+
     @Override
     @Transactional
     public Question getQuestion(QuestionDTO questionDTO) {
-        Question question ;
+        Question question;
         if (questionDTO.getQuestionId() == null) {
             question = questionService.create(questionDTO);
         } else {
-            try {
-                return questionService.findById(questionDTO.getQuestionId());
-            } catch (EntityNotFoundException ex) {
-                throw new RuntimeException("Không tìm thấy câu hỏi với ID: " + questionDTO.getQuestionId());
-            }
+            return questionService.edit(questionDTO);
         }
         return question;
     }
@@ -134,7 +126,7 @@ public class QuestionAndAnswerServiceImpl implements QuestionAndAnswerService {
     private List<QuestionAnswer> buildQuestionAnswersForMultipleChoice(Question question, List<AnswerDTO> answers, boolean isUpdate) {
         List<QuestionAnswer> result = new ArrayList<>();
         for (AnswerDTO answerDTO : answers) {
-            Answer answer = isUpdate ? answerService.edit(answerDTO) : getAnswer(answerDTO);
+            Answer answer = getAnswer(answerDTO);
             Optional<QuestionAnswer> existingQA = questionAndAnswerRepo.findByQuestionAndAnswer(question, answer);
             result.add(existingQA.orElseGet(() ->
                     QuestionAnswer.builder()

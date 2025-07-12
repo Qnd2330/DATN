@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +38,13 @@ public class Users implements UserDetails {
 
     @Column(name = "password")
     private String password;
+
+    @Column(name = "gender")
+    private String gender; // NAM hoặc NU
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     @Column(name = "create_at")
     private LocalDateTime createAt;

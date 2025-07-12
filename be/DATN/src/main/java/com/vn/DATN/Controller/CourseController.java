@@ -73,6 +73,22 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GET_COURSE_ACCESS') or hasAuthority('READ_ACCESS')")
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
+        try {
+            Course course = courseService.findById(id);
+            if (course == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy khóa học");
+            }
+            CourseResponse courseResponse = CourseResponse.fromCourse(course);
+            return ResponseEntity.ok(courseResponse);
+        } catch (RuntimeException ex) {
+            log.error("Lỗi khi lấy thông tin khóa học", ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
+
 
     @PostMapping
     @PreAuthorize("hasAuthority('CREATE_COURSE_ACCESS') or hasAuthority('CREATE_ACCESS')")

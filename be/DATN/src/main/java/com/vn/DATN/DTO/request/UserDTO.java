@@ -17,4 +17,8 @@ public class UserDTO {
     private String email;
 
     private String password;
+
+    private String birthDate;
+
+    private String gender; // NAM hoặc NU
 }

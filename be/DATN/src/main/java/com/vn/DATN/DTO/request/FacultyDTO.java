@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FacultyDTO {
     private Integer facultyId;
+    private Integer userId;
     private String facultyName;
 }
