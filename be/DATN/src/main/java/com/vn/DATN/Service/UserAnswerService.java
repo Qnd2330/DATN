@@ -11,5 +11,4 @@ public interface UserAnswerService {
     UserAnswer get(Integer id);
 
     boolean delete(Integer id);
-
 }
